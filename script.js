@@ -253,7 +253,7 @@ function togglePlaceVisibility() {
 function startTimer() {
     console.log('Starting timer');
     timerInterval = setInterval(() => {
-        if (!isPaused) {}
+        if (!isPaused) {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             document.getElementById('timer').textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;

@@ -45,7 +45,7 @@ button:hover {
 
 .card-content {
     position: relative;
-    display: inline-block
+    display: inline-block;
 }
 
 .card-content .bi {
