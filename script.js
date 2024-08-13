@@ -243,13 +243,13 @@ function togglePlaceVisibility() {
         // Last player hides their place and the game starts
         lastPlayerHidden = true;
         console.log('Hiding last player\'s place and starting timer');
+        document.getElementById('get-place-btn').disabled = true; // Disable the button
         setTimeout(() => {
             document.getElementById('place-card').style.display = 'none';
             startTimer();
         }, 100); // Delay to ensure UI update
     }
 }
-
 function startTimer() {
     console.log('Starting timer');
     timerInterval = setInterval(() => {
