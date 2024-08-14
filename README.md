@@ -15,11 +15,11 @@ Spy Game is a multiplayer party game where one or more players are randomly assi
 
 - Random Role Assignment: Randomly assigns the spy and locations or foods to players.
 
-- <img width="529" alt="image" src="https://github.com/user-attachments/assets/095a526b-ae75-42ee-9971-2ed6c2e7e978">
+<img width="529" alt="image" src="https://github.com/user-attachments/assets/095a526b-ae75-42ee-9971-2ed6c2e7e978">
 
-- <img width="513" alt="image" src="https://github.com/user-attachments/assets/d1d0155a-8e23-4fd4-878c-d5b0798fba79">
+<img width="513" alt="image" src="https://github.com/user-attachments/assets/d1d0155a-8e23-4fd4-878c-d5b0798fba79">
 
-- <img width="504" alt="image" src="https://github.com/user-attachments/assets/d68b2b2d-023e-4ff5-8359-5d909971830b">
+<img width="504" alt="image" src="https://github.com/user-attachments/assets/d68b2b2d-023e-4ff5-8359-5d909971830b">
 
 
 
