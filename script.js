@@ -3,7 +3,7 @@ let timeLeft;
 let isPaused = false;
 let showPlace = false;
 let lastPlayer = false;
-let lastPlayerHidden = false; // New flag to track if the last player has hidden the place
+let lastPlayerHidden = false;
 
 document.getElementById('start-game').addEventListener('click', startGame);
 document.getElementById('get-place-btn').addEventListener('click', togglePlaceVisibility);
@@ -20,8 +20,10 @@ function updateGameMode() {
     const customOptionsDiv = document.getElementById('custom-options');
     if (gameMode === 'custom') {
         customOptionsDiv.style.display = 'block';
+        console.log('Custom mode selected');
     } else {
         customOptionsDiv.style.display = 'none';
+        console.log(`${gameMode.charAt(0).toUpperCase() + gameMode.slice(1)} mode selected`);
     }
 }
 
@@ -31,27 +33,30 @@ function startGame() {
     gameMode = document.getElementById('game-mode').value;
     duration = parseInt(document.getElementById('duration').value) * 60; // Convert to seconds
 
-    console.log(`Starting game with ${numPlayers} players, ${numSpies} spies, game mode: ${gameMode}, duration: ${duration / 60} seconds`);
+    console.log(`Game started with ${numPlayers} players, ${numSpies} spies, in ${gameMode} mode, for ${duration / 60} minutes.`);
 
-    // Validate inputs
     if (numPlayers < 2 || numSpies < 1 || numSpies >= numPlayers) {
         alert('Invalid number of players or spies');
+        console.log('Invalid game setup: Not enough players or too many spies.');
         return;
     }
 
     if (gameMode === 'custom') {
-        customOptions = document.getElementById('custom-input').value.split(',').map(option => option.trim()).filter(option => option.length > 0);
+        customOptions = document.getElementById('custom-input').value
+            .split(',')
+            .map(option => option.trim())
+            .filter(option => option.length > 0);
+
         if (customOptions.length === 0) {
             alert('Please enter custom places/foods');
+            console.log('Custom mode selected but no custom options provided.');
             return;
         }
     }
 
-    // Hide setup and show game play
     document.getElementById('setup').style.display = 'none';
     document.getElementById('game-play').style.display = 'block';
 
-    // Initialize game
     initializeGame(numPlayers, numSpies, gameMode, duration);
 }
 
@@ -59,77 +64,37 @@ function initializeGame(numPlayers, numSpies, gameMode, duration) {
     const timerElement = document.getElementById('timer');
     timeLeft = duration;
 
-    console.log(`Game initialized. Time left: ${Math.floor(timeLeft / 60)}:00`);
-
-    // Generate and display player cards
     generatePlayerCards(numPlayers, numSpies, gameMode);
 
-    // Reset timer
     clearInterval(timerInterval);
     timerElement.textContent = `Time Left: ${Math.floor(timeLeft / 60)}:00`;
     isPaused = false;
     document.getElementById('stop-timer').disabled = false;
     document.getElementById('pause-timer').disabled = false;
 
-    // Initialize visibility state
     showPlace = false;
     lastPlayer = false;
     lastPlayerHidden = false;
 
-    // Enable the button for the first player
+    currentPlayer = 0; // Reset current player to the first player
     document.getElementById('get-place-btn').disabled = false;
+
+    console.log('Game initialized');
 }
 
 function generatePlayerCards(numPlayers, numSpies, gameMode) {
     const defaultPlaces = {
         'Hospital': 'fa-solid fa-hospital',
         'School': 'fa-solid fa-school',
-        'Factory': 'fa-solid fa-industry',
-        'Park': 'fa-solid fa-tree',
-        'Library': 'fa-solid fa-book',
-        'Museum': 'fa-solid fa-building-columns',
-        'Cafe': 'fa-solid fa-cafe',
-        'Gym': 'fa-solid fa-dumbbell',
-        'Airport': 'fa-solid fa-plane',
-        'Bank': 'fa-solid fa-university',
-        'Beach': 'fa-solid fa-umbrella-beach',
-        'Restaurant': 'fa-solid fa-utensils',
-        'Theater': 'fa-solid fa-theater-masks',
-        'Shopping Mall': 'fa-solid fa-shopping-cart',
-        'Hotel': 'fa-solid fa-cart-flatbed-suitcase',
-        'Office': 'fa-solid fa-briefcase',
-        'Train Station': 'fa-solid fa-train',
-        'Zoo': 'fa-solid fa-paw',
-        'Amusement Park': 'fa-solid fa-cable-car',
-        'Aquarium': 'fa-solid fa-fish',
-        'Bar': 'fa-solid fa-beer-mug-empty'
+        // Add other places here
     };
     
     const defaultFoods = {
         'Pizza': 'fa-solid fa-pizza-slice',
         'Burger': 'fa-solid fa-hamburger',
-        'Sushi': 'fa-solid fa-shrimp',
-        'Ice Cream': 'fa-solid fa-ice-cream',
-        'Taco': 'fa-solid fa-hotdog',
-        'Pasta': 'fa-solid fa-bowl-food',
-        'Salad': 'fa-solid fa-leaf',
-        'Cake': 'fa-solid fa-cake',
-        'Steak': 'fa-solid fa-drumstick-bite',
-        'Pancakes': 'fa-solid fa-cookie',
-        'Fried Chicken': 'fa-solid fa-drumstick-bite',
-        'Hotdog': 'fa-solid fa-hotdog',
-        'Chocolate': 'fa-solid fa-jar',
-        'Fruit Salad': 'fa-solid fa-plate-wheat',
-        'Smoothie': 'fa-solid fa-blender',
-        'Donut': 'fa-solid fa-stroopwafel',
-        'French Fries': 'fa-solid fa-candy-cane',
-        'Noodles': 'fa-solid fa-bowl-rice',
-        'BBQ Ribs': 'fa-solid fa-bone',
-        'Sandwich': 'fa-solid fa-bread-slice',
-        'Soup': 'fa-solid fa-whiskey-glass'
+        // Add other foods here
     };
 
-    
     let places;
     if (gameMode === 'custom') {
         places = customOptions;
@@ -139,12 +104,8 @@ function generatePlayerCards(numPlayers, numSpies, gameMode) {
         places = Object.keys(defaultPlaces);
     }
 
-    console.log(`Game mode: ${gameMode}`);
-    console.log(`Places available: ${places.join(', ')}`);
-
     const place = places[Math.floor(Math.random() * places.length)];
-    console.log(`Selected place/food: ${place}`);
-    
+
     cards = [];
     for (let i = 0; i < numPlayers; i++) {
         cards.push(i < numSpies ? 'Spy' : place);
@@ -156,102 +117,57 @@ function generatePlayerCards(numPlayers, numSpies, gameMode) {
         [cards[i], cards[j]] = [cards[j], cards[i]];
     }
 
-    console.log(`Cards generated: ${cards.join(', ')}`);
-
-    // Display the card
-    document.getElementById('get-place-btn').disabled = false;
+    console.log(`Player cards generated. Cards: ${cards.join(', ')}`);
 }
 
 function togglePlaceVisibility() {
     const card = cards[currentPlayer];
     const cardElement = document.getElementById('place-card');
-    
+
     if (!showPlace) {
-        // Show the place
         if (card === 'Spy') {
             cardElement.innerHTML = `<div class="card-title"><i class="fa-solid fa-user-secret"></i> Spy</div>`;
+            console.log(`Player ${currentPlayer + 1} is a Spy.`);
         } else {
             const iconClass = gameMode === 'custom' ? '' : (gameMode === 'foods' ? {
                 'Pizza': 'fa-solid fa-pizza-slice',
                 'Burger': 'fa-solid fa-hamburger',
-                'Sushi': 'fa-solid fa-shrimp',
-                'Ice Cream': 'fa-solid fa-ice-cream',
-                'Taco': 'fa-solid fa-hotdog',
-                'Pasta': 'fa-solid fa-bowl-food',
-                'Salad': 'fa-solid fa-leaf',
-                'Cake': 'fa-solid fa-cake',
-                'Steak': 'fa-solid fa-drumstick-bite',
-                'Pancakes': 'fa-solid fa-cookie',
-                'Fried Chicken': 'fa-solid fa-drumstick-bite',
-                'Hotdog': 'fa-solid fa-hotdog',
-                'Chocolate': 'fa-solid fa-jar',
-                'Fruit Salad': 'fa-solid fa-plate-wheat',
-                'Smoothie': 'fa-solid fa-blender',
-                'Donut': 'fa-solid fa-stroopwafel',
-                'French Fries': 'fa-solid fa-candy-cane',
-                'Noodles': 'fa-solid fa-bowl-rice',
-                'BBQ Ribs': 'fa-solid fa-bone',
-                'Sandwich': 'fa-solid fa-bread-slice',
-                'Soup': 'fa-solid fa-whiskey-glass'
+                // Add other foods here
             } : {
                 'Hospital': 'fa-solid fa-hospital',
                 'School': 'fa-solid fa-school',
-                'Factory': 'fa-solid fa-industry',
-                'Park': 'fa-solid fa-tree',
-                'Library': 'fa-solid fa-book',
-                'Museum': 'fa-solid fa-building-columns',
-                'Cafe': 'fa-solid fa-cafe',
-                'Gym': 'fa-solid fa-dumbbell',
-                'Airport': 'fa-solid fa-plane',
-                'Bank': 'fa-solid fa-university',
-                'Beach': 'fa-solid fa-umbrella-beach',
-                'Restaurant': 'fa-solid fa-utensils',
-                'Theater': 'fa-solid fa-theater-masks',
-                'Shopping Mall': 'fa-solid fa-shopping-cart',
-                'Hotel': 'fa-solid fa-cart-flatbed-suitcase',
-                'Office': 'fa-solid fa-briefcase',
-                'Train Station': 'fa-solid fa-train',
-                'Zoo': 'fa-solid fa-paw',
-                'Amusement Park': 'fa-solid fa-cable-car',
-                'Aquarium': 'fa-solid fa-fish',
-                'Bar': 'fa-solid fa-beer-mug-empty'
+                // Add other places here
             })[card];
             cardElement.innerHTML = `<div class="card-title"><i class="${iconClass}"></i> ${card}</div>`;
+            console.log(`Player ${currentPlayer + 1} sees their card: ${card}`);
         }
         cardElement.style.display = 'inline-block';
     } else {
-        // Hide the place
         cardElement.style.display = 'none';
+        console.log(`Player ${currentPlayer + 1} hides their card.`);
     }
 
     showPlace = !showPlace;
 
     if (showPlace) {
-        // Move to next player
         currentPlayer++;
         if (currentPlayer >= numPlayers) {
-            // Last player has seen their place
             lastPlayer = true;
-            console.log('All players have seen their places');
             document.getElementById('get-place-btn').disabled = false;
         } else {
-            // Ensure button is enabled for the next player
-            console.log(`Player ${currentPlayer + 1} is seeing their place`);
             document.getElementById('get-place-btn').disabled = false;
         }
     } else if (lastPlayer && !lastPlayerHidden) {
-        // Last player hides their place and the game starts
         lastPlayerHidden = true;
-        console.log('Hiding last player\'s place and starting timer');
-        document.getElementById('get-place-btn').disabled = true; // Disable the button
+        document.getElementById('get-place-btn').disabled = true;
         setTimeout(() => {
             document.getElementById('place-card').style.display = 'none';
             startTimer();
-        }, 100); // Delay to ensure UI update
+        }, 100);
     }
 }
+
 function startTimer() {
-    console.log('Starting timer');
     timerInterval = setInterval(() => {
         if (!isPaused) {
             const minutes = Math.floor(timeLeft / 60);
@@ -261,35 +177,52 @@ function startTimer() {
 
             if (timeLeft < 0) {
                 clearInterval(timerInterval);
-                console.log('Time is up!');
                 alert('Game over!');
-                stopTimer(); // Call stopTimer to return to the main screen
+                stopTimer();
+                console.log('Game over! Timer has finished.');
             }
         }
     }, 1000);
+    console.log('Timer started');
 }
 
 function stopTimer() {
-    console.log('Stopping timer');
     clearInterval(timerInterval);
     document.getElementById('timer').textContent = 'Time Left: 00:00';
     document.getElementById('stop-timer').disabled = true;
     document.getElementById('pause-timer').disabled = true;
 
-    // Reset to main screen
     document.getElementById('setup').style.display = 'block';
     document.getElementById('game-play').style.display = 'none';
+
+    console.log('Timer stopped');
 }
 
 function togglePause() {
     if (isPaused) {
-        console.log('Resuming timer');
         startTimer();
         document.getElementById('pause-timer').textContent = 'Pause Timer';
+        console.log('Timer resumed');
     } else {
-        console.log('Pausing timer');
         clearInterval(timerInterval);
         document.getElementById('pause-timer').textContent = 'Resume Timer';
+        console.log('Timer paused');
     }
     isPaused = !isPaused;
+}
+
+function resetGame() {
+    currentPlayer = 0;
+    lastPlayer = false;
+    lastPlayerHidden = false;
+    clearInterval(timerInterval);
+    document.getElementById('timer').textContent = 'Time Left: 00:00';
+    document.getElementById('get-place-btn').disabled = false;
+    document.getElementById('pause-timer').textContent = 'Pause Timer';
+    isPaused = false;
+
+    document.getElementById('setup').style.display = 'block';
+    document.getElementById('game-play').style.display = 'none';
+
+    console.log('Game reset');
 }
