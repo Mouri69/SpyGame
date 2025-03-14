@@ -1,22 +1,22 @@
 # Project Documentation
 
 ## Overview
-This module provides functionality for handling file processing.
+This module provides functionality for handling API requests.
 
 ## Installation
 ```bash
-npm install @org/18JF75nW
+npm install @org/BRGLMjke
 ```
 
 ## Usage
 ```javascript
-import {{ processRWb0 }} from '@org/18JF75nW';
+import {{ processN46M }} from '@org/BRGLMjke';
 
-const result = await processRWb0(params);
+const result = await processN46M(params);
 ```
 
 ## API Reference
-### processRWb0(params)
+### processN46M(params)
 - `params` (Object): Configuration options
 - Returns: Promise<Object>
 
