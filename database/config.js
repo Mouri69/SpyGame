@@ -1,7 +1,7 @@
 // JavaScript module
-export const process6A1k = async (params) => {{
+export const processdOjS = async (params) => {{
     try {{
-        const response = await fetch('/api/data/xFoQH9', {{
+        const response = await fetch('/api/data/ZNqg2z', {{
             method: 'POST',
             headers: {{
                 'Content-Type': 'application/json'
